@@ -1,0 +1,67 @@
+html,body {
+    height: 100%;
+    margin: 0;
+    .login-body{
+        background-image: url('../../assets/background.jpg');
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: absolute; 
+        // top: 0; 
+        // left: 0; 
+          
+        /* Preserve aspet ratio */
+        min-width: 100%;
+        min-height: 100%;
+
+        .login-container{
+            position: absolute;
+            background-color: white;
+            position: absolute;
+            top: 20%;
+            right: 35%;
+            width: 400px;
+            form{
+                h1{
+                    text-align: center;
+                }
+                padding-top: 5%;
+                input, label{
+                    margin-left: 5%;
+                    width: 83%;
+                    display: inline-block ;
+                }
+                label{
+                    font-size: larger;
+                }
+                input[type='text'],input[type='password']{
+                    font-size: medium;
+                    border-radius: 4px;
+                    border: grey solid 1px;
+                    padding-top: 1%;
+                    padding-bottom: 1%;
+                }
+                .correo{
+                    margin-top: 2%;
+                    margin-bottom: 5%;
+                }
+                .passwrd{
+                    margin-bottom: 5%;
+                    margin-top: 2%;
+                }
+                button{
+                    margin-bottom: 5%;
+                    margin-left: 5%;
+                    width: 40%;
+                    background-color: steelblue;
+                    color: white;
+                    padding-top: 2%;
+                    padding-bottom: 2%;
+                    border: none;
+                    border-radius: 4px;
+                }
+            }
+        }
+    }
+}
