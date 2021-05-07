@@ -1,18 +1,32 @@
 import {Navbar,Nav, CardDeck,Card,Button,Col,Row,Modal,Form} from 'react-bootstrap'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Menu from '../menu'
 function ClienteIndex() {
+    const url = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/clientes';
     const [show, setShow] = useState(false);
+    const [clientes, setClientes] = useState([]);
+
+    useEffect(() =>{
+        const fetchData = async () =>{
+            const client = await axios.get(url);
+            setClientes(client.data.data.Items);
+            console.log(client.data.data.Items);
+        };
+
+        fetchData();
+    },[]);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     return (
         <section>
             <Menu></Menu>
-            <Button className="mb-3">Agregar</Button>
+            <Button className="mb-3" onClick={handleShow}>Agregar</Button>
+            <h1>Clientes</h1>
             <Row>
                 <Col md={3}>
-                <Card  className="text-center mb-2">
+                {/* <Card  className="text-center mb-2">
                     <Card.Header>#ID</Card.Header>
                     <Card.Body>
                         <Card.Title>Oscar Cardenas</Card.Title>
@@ -30,7 +44,7 @@ function ClienteIndex() {
                 <Card  className="text-center mb-2">
                     <Card.Header>#ID</Card.Header>
                     <Card.Body>
-                        <Card.Title>Oscar Cardenas</Card.Title>
+                        <Card.Title>Cardenas</Card.Title>
                         <Card.Text>
                         <p>oscar@mail.com</p>
                         <p>3333333333</p>
@@ -81,7 +95,7 @@ function ClienteIndex() {
                         <Button variant="danger">Eliminar</Button>
                     </Card.Body>
                     <Card.Footer className="text-muted">Agregado hace 2 dias</Card.Footer>
-                </Card>
+                </Card> */}
                 </Col>
             </Row>
             <Modal show={show} onHide={handleClose}>

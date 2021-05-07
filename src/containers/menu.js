@@ -7,10 +7,10 @@ function Menu() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="#home">Inicio</Nav.Link>
-            <Nav.Link href="#link">Clientes</Nav.Link>
-            <Nav.Link href="#link">Articulos</Nav.Link>
+            <Nav.Link href="/cliente">Clientes</Nav.Link>
+            <Nav.Link href="/articulos">Articulos</Nav.Link>
             <Nav.Link href="#link">Envios</Nav.Link>
-            <Nav.Link href="#link">Cerrar sesion</Nav.Link>
+            <Nav.Link href="/">Cerrar sesion</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
