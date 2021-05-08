@@ -6,7 +6,6 @@ function Menu() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="#home">Inicio</Nav.Link>
             <Nav.Link href="/cliente">Clientes</Nav.Link>
             <Nav.Link href="/articulos">Articulos</Nav.Link>
             <Nav.Link href="#link">Envios</Nav.Link>
