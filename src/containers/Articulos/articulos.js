@@ -34,8 +34,8 @@ const Articulos = () =>{
                             <p>categoria</p>
                             <p>Precio: ${articulos[i].price}</p>
                             </Card.Text>
-                            <Button variant="warning" onClick={handleShow2}>Editar</Button>
-                            <Button variant="danger">Eliminar</Button>
+                            <Button id={i} variant="warning" onClick={handleShow2}>Editar</Button>
+                            <Button variant="danger" id={i} onClick={deleteArticulo}>Eliminar</Button>
                         </Card.Body>
                         <Card.Footer className="text-muted">Agregado hace 2 dias</Card.Footer>
                     </Card>
@@ -58,7 +58,50 @@ const Articulos = () =>{
     }, [articulos]);
 
     const onSubmit = () =>{
+        var inputName = document.getElementById("nameArticulo");
 
+        //TODO: ver lo de las imagenes
+        var inputImg = document.getElementById("imgArticulo");
+        var inputPrecio = document.getElementById("precio");
+
+        var jsonObject = {};
+        jsonObject['name'] = inputName.value;
+        jsonObject['price'] = inputPrecio.value;
+
+        axios.post(url, jsonObject);
+        setShow(false);
+
+    }
+
+    const deleteArticulo = (event) =>{
+        const fetchDelete = async (id) => {
+            //delete element
+            await axios.delete(url+'?id='+id);
+        }
+
+        var id  = event.target.attributes.id.value;
+        var element = articulos[id];
+        fetchDelete(element.id);
+    }
+
+    const editArticulo = () =>{
+        var i = editId;
+        var inputName = document.getElementById("nameArticuloEdt");
+
+        //TODO: ver lo de las imagenes
+        var inputImg = document.getElementById("imgArticuloEdt");
+        var inputPrecio = document.getElementById("precioEdt");
+
+        articulos[i].name = inputName.value !== "" ? inputName.value: articulos[i].name;
+        articulos[i].price = inputPrecio.value !== "" ? inputPrecio.value : articulos[i].price;
+        
+        const edt = async (element) =>{
+           await axios.put(url+'?id='+element.id, element);
+        }
+
+        edt(articulos[i]);
+        setShow2(false);
+        
     }
 
     const handleClose = () => setShow(false);
@@ -87,10 +130,10 @@ const Articulos = () =>{
                     {...register('nameArticulo', { required: true, maxLength: 30 })}
                     />
 
-                    {errors.name && errors.name.type === "required" && (
+                    {errors.nameArticulo && errors.nameArticulo.type === "required" && (
                         <span role="alert">Llene este campo</span>
                         )}
-                    {errors.name && errors.name.type === "maxLength" && (
+                    {errors.nameArticulo && errors.nameArticulo.type === "maxLength" && (
                         <span role="alert">Largo máximo excedido</span>
                         )}
                     <br/>
@@ -116,6 +159,7 @@ const Articulos = () =>{
                     </Button>
 
                 </form>
+            
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -129,24 +173,34 @@ const Articulos = () =>{
             <Modal.Title>Agregar Artículo</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {/* <Form.Group >
-                    <Form.Label>Nombre del Articulo: </Form.Label>
-                    <Form.Control type="text" placeholder="Nombre del Articulo"/>           
-                    <Form.Label>Imagen del Articulo: </Form.Label>
-                    <Form.Control type="file" placeholder="Correo del Articulo" accept="image/jpg"/>           
-                    <Form.Label>Precio del Articulo: </Form.Label>
-                    <Form.Control type="text" placeholder="Precio del Articulo"/>           
-                </Form.Group> */}
-                {/* <form onSubmit={handleSubmit(onSubmit)}>
+                <form>
+                    <label htmlFor="nameArticuloEdt">Nombre del Articulo</label>
+                    <br/>
+                    <input id="nameArticuloEdt"/>
+                    <br/>
+                    <br/>
 
-                </form> */}
+                    <label htmlFor="imgArticuloEdt">Imagen del Articulo</label>
+                    <br/>
+                    <input type="file" id="imgArticuloEdt"/>
+                    <br/>
+                    <br/>
+                    <label htmlFor="precioEdt">Precio del Articulo</label>
+                    <br/>
+                    <input type="text" id="precioEdt"/>
+                    <br/>
+                    <br/>
+
+                    <Button onClick={editArticulo} variant="primary">
+                        Guardar
+                    </Button>
+
+                </form>
+            
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose2}>
                 Cerrar
-            </Button>
-            <Button variant="primary" onClick={handleClose2}>
-                Guardar
             </Button>
             </Modal.Footer>
             </Modal>

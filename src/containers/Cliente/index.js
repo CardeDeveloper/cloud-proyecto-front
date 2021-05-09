@@ -62,9 +62,7 @@ const  ClienteIndex = () => {
     const deleteFunc = (event) =>{
         const fetchDelete = async (id) => {
             //delete element
-            console.log(id)
-            var del = await axios.delete(url+'?id='+id);
-            console.log(del);
+            await axios.delete(url+'?id='+id);
         }
 
         //get id to delete

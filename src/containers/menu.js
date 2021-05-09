@@ -13,7 +13,7 @@ function Menu() {
           <Nav className="mr-auto">
             <Nav.Link href="/cliente">Clientes</Nav.Link>
             <Nav.Link href="/articulos">Articulos</Nav.Link>
-            <Nav.Link href="#link">Envios</Nav.Link>
+            <Nav.Link href="/envios">Envios</Nav.Link>
             <Nav.Link href="/" onClick={closeSession}>Cerrar sesion</Nav.Link>
           </Nav>
         </Navbar.Collapse>
