@@ -1,5 +1,10 @@
-import {Navbar,Nav} from 'react-bootstrap'
+import {Navbar,Nav} from 'react-bootstrap';
+
 function Menu() {
+    const closeSession = () =>{
+      window.sessionStorage.setItem("password", "");
+      window.sessionStorage.setItem("email", "");
+    }
     return (
         <Navbar bg="light" expand="lg">
         <Navbar.Brand href="#home">Proyecto cloud</Navbar.Brand>
@@ -9,7 +14,7 @@ function Menu() {
             <Nav.Link href="/cliente">Clientes</Nav.Link>
             <Nav.Link href="/articulos">Articulos</Nav.Link>
             <Nav.Link href="#link">Envios</Nav.Link>
-            <Nav.Link href="/">Cerrar sesion</Nav.Link>
+            <Nav.Link href="/" onClick={closeSession}>Cerrar sesion</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

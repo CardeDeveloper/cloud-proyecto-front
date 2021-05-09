@@ -4,13 +4,16 @@ import ReactDOM from 'react-dom';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
 import Menu from '../menu';
+import Login from '../Login/login';
 
-function ClienteIndex() {
+const  ClienteIndex = () => {
+    const userEmail = window.sessionStorage.getItem("email");
+    const userPassword = window.sessionStorage.getItem("password");
     const { register, handleSubmit, formState: { errors } } = useForm();
     const url = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/clientes';
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
-    const [first, setFirst] = useState(false);
+    // const [first, setFirst] = useState(false);
     const [editId, setEditId] = useState(-1);
     const [clientes, setClientes] = useState([]);
 
@@ -42,13 +45,19 @@ function ClienteIndex() {
             ReactDOM.render(
                 component, column
             )
-            setFirst(true);
+            // setFirst(true);
         };
 
-        if(!first){
+        if(userEmail === null || userPassword === null || userEmail === "" || userPassword === ""){
+            ReactDOM.render(
+                <Login/>,document.getElementById('root')
+            )
+        }else{
+            // if(!first){
             fetchData();
+            // }
         }
-    });
+    },[clientes]);
 
     const deleteFunc = (event) =>{
         const fetchDelete = async (id) => {
@@ -60,10 +69,10 @@ function ClienteIndex() {
 
         //get id to delete
         var id  = event.target.attributes.id.value;
-        // var element = clientes[id];
-        fetchDelete(id);
-        setFirst(false);
-        window.location.reload(false);
+        var element = clientes[id];
+        fetchDelete(element.id);
+        // setFirst(false);
+        // window.location.reload(false);
     }
 
     const onSubmit = (event) => {
@@ -83,7 +92,8 @@ function ClienteIndex() {
 
         //cerrar al final el modal
         setShow(false);
-        setFirst(false);
+        // setFirst(false);
+        // window.location.reload();
     }
     
     const onSubmitEditForm = (event) =>{
@@ -104,8 +114,8 @@ function ClienteIndex() {
         }
 
         edt(clientes[i]);
-        setFirst(false);
-        window.location.reload(false);
+        // setFirst(false);
+        // window.location.reload();
         setShow2(false);
     }
 
@@ -129,7 +139,7 @@ function ClienteIndex() {
 
             <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Edición del Usuario</Modal.Title>
+            <Modal.Title>Agregar Usuario</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <form onSubmit={handleSubmit(onSubmit)}>
