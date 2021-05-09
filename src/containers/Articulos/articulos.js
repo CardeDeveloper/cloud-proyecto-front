@@ -11,7 +11,9 @@ const Articulos = () =>{
     const userEmail = window.sessionStorage.getItem("email");
     const userPassword = window.sessionStorage.getItem("password");
     const url = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/articulos';
-    const urlImg = 'http://node-express-env.eba-iqraxyiu.us-east-1.elasticbeanstalk.com/';    
+    const urlImg = 'http://node-express-env.eba-iqraxyiu.us-east-1.elasticbeanstalk.com/';   
+    const showImgUrl = 'https://exmen.s3.amazonaws.com/'; 
+    const reconImgUrl = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/reko';
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [editId, setEditId] = useState(-1);
@@ -24,6 +26,7 @@ const Articulos = () =>{
             var div = document.getElementById('divArticulo');
             var listArticulos = [];
             for(var i = 0; i < articulos.length; i++){
+                // console.log(showImgUrl+articulos[i].img);
                 listArticulos[i] = React.createElement(Col, {md:'3', key:i},
                     <Card  className="text-center mb-2">
                         <Card.Header>#ID: {i}</Card.Header>
@@ -31,8 +34,8 @@ const Articulos = () =>{
                             <Card.Title>{articulos[i].name}</Card.Title>
                             <Card.Text>
                             <p>Código: {articulos[i].code}</p>
-                            <p>instertar imagen</p>
-                            <p>categoria</p>
+                            <img src={showImgUrl+articulos[i].img} alt="" height='100px'/>
+                            <p>Categorias: {articulos[i].categories}</p>
                             <p>Precio: ${articulos[i].price}</p>
                             </Card.Text>
                             <Button id={i} variant="warning" onClick={handleShow2}>Editar</Button>
@@ -58,7 +61,7 @@ const Articulos = () =>{
         
     }, [articulos]);
 
-    const onSubmit = () =>{
+    const onSubmit = async () =>{
         var formData = new FormData();
         var inputName = document.getElementById("nameArticulo");
         var inputCode = document.querySelector('#codigo');
@@ -69,24 +72,34 @@ const Articulos = () =>{
 
         formData.append("image", inputImg.files[0]);
         
-        const postImage = async (formData) =>{
-            // console.log(formData);
+        var res =  await axios.post(urlImg, formData,{
+            headers:{
+                'Content-Type': 'multipart/form-data'       
+            }
+        });
+        
+        //regresa el nombre del archivo guardado en S3
+        var filename = res.data.filename;
 
-            await axios.post(urlImg, formData,{
-                headers:{
-                    'Content-Type': 'multipart/form-data'       
-                }
-            });
-            // console.log(pos);
+        //hacer un get a la url del servicio de reconocimiento de fotos de amazon
+        var imgRecon = await axios.get(reconImgUrl+'?s3Key='+filename);
+
+        var strCategories = "";
+        for (let i = 0; i < imgRecon.data.length; i++) {
+            if(i === imgRecon.data.length-1){
+                strCategories += imgRecon.data[i];
+            }else{
+                strCategories += (imgRecon.data[i] + ', ');
+            }
         }
         
-        postImage(formData);
-        console.log('post Image');
-        
-        var jsonObject = {};
-        jsonObject['name'] = inputName.value;
-        jsonObject['price'] = inputPrecio.value;
-        jsonObject['code'] = inputCode.value;
+        var jsonObject = {
+            'img': filename,
+            'code': inputCode.value,
+            'price': inputPrecio.value,
+            'name':inputName.value,
+            'categories':strCategories
+        };
 
 
         axios.post(url, jsonObject);
@@ -105,7 +118,7 @@ const Articulos = () =>{
         fetchDelete(element.id);
     }
 
-    const editArticulo = () =>{
+    const editArticulo = async () =>{
         var i = editId;
         var inputName = document.getElementById("nameArticuloEdt");
 
@@ -118,21 +131,31 @@ const Articulos = () =>{
         articulos[i].price = inputPrecio.value !== "" ? inputPrecio.value : articulos[i].price;
         articulos[i].code = inputCode.value !== "" ? inputCode.value : articulos[i].code;
         
+
         if(inputImg.files.length === 1){
             var formData = new FormData();
             formData.append("image", inputImg.files[0]);
 
-            // const editImg = async () =>{
-            //     var pos = await axios.post(urlImg, formData,{
-            //         headers:{
-            //             'Content-Type': 'multipart/form-data'       
-            //         }
-            //     });
-            //     console.log(pos);
-            // }
+            var res =  await axios.post(urlImg, formData,{
+                headers:{
+                    'Content-Type': 'multipart/form-data'       
+                }
+            });
+            
+            var filename = res.data.filename;
+            var imgRecon = await axios.get(reconImgUrl+'?s3Key='+filename);
 
-            // editImg();
+            var strCategories = "";
+            for (let i = 0; i < imgRecon.data.length; i++) {
+                if(i === imgRecon.data.length-1){
+                    strCategories += imgRecon.data[i];
+                }else{
+                    strCategories += (imgRecon.data[i] + ', ');
+                }
+            }
 
+            articulos[i].img = filename;
+            articulos[i].categories = strCategories;
         }
         const edt = async (element) =>{
            await axios.put(url+'?id='+element.id, element);

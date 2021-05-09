@@ -53,7 +53,6 @@ const Login = () =>{
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                    />
-                    <Button variant="secondary">Olvidé mi contraseña</Button>
                     <Button variant="primary" onClick={LoginSession}>Iniciar Sesión</Button>
                     <div style={{marginLeft:'10%'}}>
                         <p id="loginDiv" style={{color:'red'}}></p>
