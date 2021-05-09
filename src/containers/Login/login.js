@@ -1,26 +1,40 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import ClienteIndex from '../Cliente/index';
 import '../../styles/components/login.scss';
 
 const Login = () =>{
+    const url = 'https://us-south.functions.appdomain.cloud/api/v1/web/is714181%40iteso.mx_dev/default/login';
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const LoginSession = () =>{
-        // var correo = document.getElementById('fname');
-        // var password = document.getElementById('fpassword');
+    const LoginSession = async () =>{
         var p = document.getElementById('loginDiv');
-
+        
         if(email === "" || password === ""){
             p.innerText = "Llene los campos";
             console.log(email + " "+ password)
         }else{
             p.innerHTML = "";
-            window.sessionStorage.setItem("password", password);
-            window.sessionStorage.setItem("email", email);
-            ReactDOM.render(<ClienteIndex/>, document.getElementById('root'));
+            
+            //validar credenciales
+            var jsonLogin = {
+                "user":{
+                    "email": email,
+                    "password": password
+                }
+            };
+            
+            var res = await axios.post(url, jsonLogin);
+            if(res.data.status === "fallido"){
+                p.innerText = "Credenciales no validas";
+            }else{
+                window.sessionStorage.setItem("password", password);
+                window.sessionStorage.setItem("email", email);
+                ReactDOM.render(<ClienteIndex/>, document.getElementById('root'));
+            }
         }
     }
 

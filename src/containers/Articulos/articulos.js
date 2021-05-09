@@ -10,7 +10,8 @@ const Articulos = () =>{
     const { register, handleSubmit, formState: { errors } } = useForm();
     const userEmail = window.sessionStorage.getItem("email");
     const userPassword = window.sessionStorage.getItem("password");
-    const url = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/articulos';    
+    const url = 'https://vl8v5y1mth.execute-api.us-east-1.amazonaws.com/prod/articulos';
+    const urlImg = 'http://node-express-env.eba-iqraxyiu.us-east-1.elasticbeanstalk.com/';    
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [editId, setEditId] = useState(-1);
@@ -58,15 +59,35 @@ const Articulos = () =>{
     }, [articulos]);
 
     const onSubmit = () =>{
+        var formData = new FormData();
         var inputName = document.getElementById("nameArticulo");
+        var inputCode = document.querySelector('#codigo');
 
         //TODO: ver lo de las imagenes
         var inputImg = document.getElementById("imgArticulo");
         var inputPrecio = document.getElementById("precio");
 
+        formData.append("image", inputImg.files[0]);
+        
+        const postImage = async (formData) =>{
+            // console.log(formData);
+
+            await axios.post(urlImg, formData,{
+                headers:{
+                    'Content-Type': 'multipart/form-data'       
+                }
+            });
+            // console.log(pos);
+        }
+        
+        postImage(formData);
+        console.log('post Image');
+        
         var jsonObject = {};
         jsonObject['name'] = inputName.value;
         jsonObject['price'] = inputPrecio.value;
+        jsonObject['code'] = inputCode.value;
+
 
         axios.post(url, jsonObject);
         setShow(false);
@@ -89,12 +110,30 @@ const Articulos = () =>{
         var inputName = document.getElementById("nameArticuloEdt");
 
         //TODO: ver lo de las imagenes
-        var inputImg = document.getElementById("imgArticuloEdt");
+        var inputImg = document.querySelector("#imgArticuloEdt");
         var inputPrecio = document.getElementById("precioEdt");
+        var inputCode = document.getElementById("codeEdt");
 
         articulos[i].name = inputName.value !== "" ? inputName.value: articulos[i].name;
         articulos[i].price = inputPrecio.value !== "" ? inputPrecio.value : articulos[i].price;
+        articulos[i].code = inputCode.value !== "" ? inputCode.value : articulos[i].code;
         
+        if(inputImg.files.length === 1){
+            var formData = new FormData();
+            formData.append("image", inputImg.files[0]);
+
+            // const editImg = async () =>{
+            //     var pos = await axios.post(urlImg, formData,{
+            //         headers:{
+            //             'Content-Type': 'multipart/form-data'       
+            //         }
+            //     });
+            //     console.log(pos);
+            // }
+
+            // editImg();
+
+        }
         const edt = async (element) =>{
            await axios.put(url+'?id='+element.id, element);
         }
@@ -123,7 +162,7 @@ const Articulos = () =>{
             <Modal.Title>Agregar Articulo</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" action='upload_file'>
                     <label htmlFor="nameArticulo">Nombre del Articulo</label>
                     <br/>
                     <input id="nameArticulo" aria-invalid={errors.nameArticulo ? "true" : "false"}
@@ -153,6 +192,15 @@ const Articulos = () =>{
                     )}
                     <br/>
                     <br/>
+                    <label htmlFor="codigo">Codigo Articulo</label>
+                    <br/>
+                    <input type="text" id="codigo" aria-invalid={errors.codigo ? "true" : "false"}
+                    {...register("codigo", {required: true})}/>
+                    {errors.codigo && errors.codigo.type === "required" && (
+                        <span role="alert">Llene este campo</span>
+                    )}
+                    <br/>
+                    <br/>
 
                     <Button type="submit" variant="primary">
                         Guardar
@@ -173,7 +221,7 @@ const Articulos = () =>{
             <Modal.Title>Agregar Artículo</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <form>
+                <form encType="multipart/form-data">
                     <label htmlFor="nameArticuloEdt">Nombre del Articulo</label>
                     <br/>
                     <input id="nameArticuloEdt"/>
@@ -188,6 +236,11 @@ const Articulos = () =>{
                     <label htmlFor="precioEdt">Precio del Articulo</label>
                     <br/>
                     <input type="text" id="precioEdt"/>
+                    <br/>
+                    <br/>
+                    <label htmlFor="codeEdt">Codigo Articulo</label>
+                    <br/>
+                    <input type="text" id="codeEdt"/>
                     <br/>
                     <br/>
 
