@@ -15,4 +15,4 @@ COPY . .
 # exponemos el puerto
 EXPOSE ${PORT}
 # corremos el comando para nuestra app
-CMD [ "node", "index.js" ]
+CMD [ "npm", "start" ]
