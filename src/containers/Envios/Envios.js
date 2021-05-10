@@ -14,9 +14,13 @@ const Envios = () =>{
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [envios, setEnvios] = useState([]);
+    const [editId, setEditId] = useState(-1);
     
     const handleShow = () => setShow(true);
-    const handleShow2 = () => setShow2(true);
+    const handleShow2 = (event) => {
+        setEditId(event.target.attributes.id.value)
+        setShow2(true);
+    }
     const handleClose = () => setShow(false);
     const handleClose2 = () => setShow2(false);
 
@@ -24,19 +28,19 @@ const Envios = () =>{
         const fetchData = async () =>{
             const res = await axios.get(url);
             setEnvios(res.data.data.Items);
-            var div = document.getElementbyId('divEnvio');
+            var div = document.getElementById('divEnvio');
             var listEnvios = [];
             for (var i = 0; i < envios.length; i++) {
                 listEnvios[i] = React.createElement(Col, {md:'3', key:i},
                         <Card  className="text-center mb-2">
                         <Card.Header>#ID: {i}</Card.Header>
                         <Card.Body>
-                            <Card.Title>{envios[i].name}</Card.Title>
+                            <Card.Title>{envios[i].delivery}</Card.Title>
                             <Card.Text>
-                            <p>Código: {envios[i].code}</p>
-                            <p>Precio: ${envios[i].address}</p>
+                            <p>Código: {envios[i].tracking}</p>
+                            <p>ID cliente: {envios[i].id_client}</p>
                             </Card.Text>
-                            <Button id={i} variant="warning" onClick={editEnvio}>Editar</Button>
+                            <Button id={i} variant="warning" onClick={handleShow2}>Editar</Button>
                             <Button variant="danger" id={i} onClick={deleteEnvio}>Eliminar</Button>
                         </Card.Body>
                         <Card.Footer className="text-muted">Agregado hace 2 dias</Card.Footer>
@@ -60,19 +64,44 @@ const Envios = () =>{
     },[envios]);
 
     //agregar envio
-    const onSubmit = () =>{
+    const onSubmit = async () =>{
+        var envio = document.getElementById('envio');
+        var codigo = document.getElementById('tracking');
+        var idCliente = document.getElementById('cliente');
 
+        var jsonObject = {
+            "delivery": envio.value,
+            "tracking": codigo.value,
+            "id_client": idCliente.value
+        }
+
+        var res = await axios.post(url, jsonObject);
+        console.log(res);
+        setShow(false);
     }
 
     //editar envio
-    const editEnvio = (event) =>{
-        var id = event.target.attributes.id.value;
+    const editEnvio = async () =>{
+        var i = editId;
+        var envio = document.getElementById('envioEdt');
+        var codigo = document.getElementById('trackingEdt');
+        var idCliente = document.getElementById('clienteEdt');
 
+        envios[i].delivery = envio.value !== "" ? envio.value: envios[i].delivery;
+        envios[i].tracking = codigo.value !== "" ? codigo.value : envios[i].tracking;
+        envios[i].id_client = idCliente.value !== "" ? idCliente.value : envios[i].id_client;
+        
+        await axios.put(url+'?id='+envios[i].id,envios[i]);
+
+        setShow2(false);
     }
-
+    
     //borrar envio
-    const deleteEnvio = (event) =>{
-        var id = event.target.attributes.id.value;
+    const deleteEnvio = async (event) =>{
+        var i = event.target.attributes.id.value;
+        
+        var res = await axios.delete(url+'?id='+envios[i].id);
+        console.log(res);
     }
 
     return(
@@ -88,31 +117,35 @@ const Envios = () =>{
             </Modal.Header>
             <Modal.Body>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="nameArticulo">Nombre del Articulo</label>
+                    <label htmlFor="envio">Envio</label>
                     <br/>
-                    <input id="nameArticulo" aria-invalid={errors.nameArticulo ? "true" : "false"}
-                    {...register('nameArticulo', { required: true, maxLength: 30 })}
+                    <input id="envio" aria-invalid={errors.envio ? "true" : "false"}
+                    {...register('envio', { required: true, maxLength: 30 })}
                     />
 
-                    {errors.nameArticulo && errors.nameArticulo.type === "required" && (
+                    {errors.envio && errors.envio.type === "required" && (
                         <span role="alert">Llene este campo</span>
                         )}
-                    {errors.nameArticulo && errors.nameArticulo.type === "maxLength" && (
+                    {errors.envio && errors.envio.type === "maxLength" && (
                         <span role="alert">Largo máximo excedido</span>
                         )}
                     <br/>
                     <br/>
 
-                    <label htmlFor="imgArticulo">Imagen del Articulo</label>
+                    <label htmlFor="tracking">Código de envío:</label>
                     <br/>
-                    <input type="file" id="imgArticulo"/>
+                    <input type="text" id="tracking" aria-invalid={errors.precio ? "true" : "false"}
+                    {...register("tracking", {required: true})}/>
+                    {errors.tracking && errors.tracking.type === "required" && (
+                        <span role="alert">Llene este campo</span>
+                    )}
                     <br/>
                     <br/>
-                    <label htmlFor="precio">Precio del Articulo</label>
+                    <label htmlFor="tracking">ID del Cliente:</label>
                     <br/>
-                    <input type="text" id="precio" aria-invalid={errors.precio ? "true" : "false"}
-                    {...register("precio", {required: true})}/>
-                    {errors.precio && errors.precio.type === "required" && (
+                    <input type="text" id="cliente" aria-invalid={errors.precio ? "true" : "false"}
+                    {...register("cliente", {required: true})}/>
+                    {errors.cliente && errors.cliente.type === "required" && (
                         <span role="alert">Llene este campo</span>
                     )}
                     <br/>
@@ -134,27 +167,28 @@ const Envios = () =>{
 
             <Modal show={show2} onHide={handleClose2}>
             <Modal.Header closeButton>
-            <Modal.Title>Agregar Artículo</Modal.Title>
+            <Modal.Title>Editar Envío</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <form>
-                    <label htmlFor="nameArticuloEdt">Nombre del Articulo</label>
+                    <label htmlFor="envioEdt">Envio</label>
                     <br/>
-                    <input id="nameArticuloEdt"/>
-                    <br/>
-                    <br/>
-
-                    <label htmlFor="imgArticuloEdt">Imagen del Articulo</label>
-                    <br/>
-                    <input type="file" id="imgArticuloEdt"/>
-                    <br/>
-                    <br/>
-                    <label htmlFor="precioEdt">Precio del Articulo</label>
-                    <br/>
-                    <input type="text" id="precioEdt"/>
+                    <input id="envioEdt"/>
                     <br/>
                     <br/>
 
+                    <label htmlFor="trackingEdt">Código de envío:</label>
+                    <br/>
+                    <input type="text" id="trackingEdt"/>
+
+                    <br/>
+                    <br/>
+                    <label htmlFor="clienteEdt">ID del Cliente:</label>
+                    <br/>
+                    <input type="text" id="clienteEdt"/>
+
+                    <br/>
+                    <br/>
                     <Button onClick={editEnvio} variant="primary">
                         Guardar
                     </Button>

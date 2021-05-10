@@ -30,6 +30,7 @@ const  ClienteIndex = () => {
                         <Card.Body>
                             <Card.Title>{clientes[i].name}</Card.Title>
                             <Card.Text>
+                            <p>ID Cliente: {clientes[i].id}</p>
                             <p>{clientes[i].email}</p>
                             <p>{clientes[i].phone}</p>
                             </Card.Text>
