@@ -100,8 +100,7 @@ const Envios = () =>{
     const deleteEnvio = async (event) =>{
         var i = event.target.attributes.id.value;
         
-        var res = await axios.delete(url+'?id='+envios[i].id);
-        console.log(res);
+        await axios.delete(url+'?id='+envios[i].id);
     }
 
     return(
