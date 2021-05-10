@@ -1,0 +1,8 @@
+---
+applications:
+- name: proyecto
+  path: build/
+  instances: 1
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+  memory: 128M
+  diskquota: 128MB
