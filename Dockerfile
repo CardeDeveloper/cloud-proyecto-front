@@ -5,7 +5,7 @@ FROM node:12-alpine
 # label para agregar metadatos
 LABEL autor="OCA,AG"
 # cremos el directorio de la app
-WORKDIR /user/src/app
+WORKDIR /app
 # copiamos el archivo a nuestra carpeta 
 COPY package*.json ./
 # instalamos las dependencias
@@ -15,4 +15,4 @@ COPY . .
 # exponemos el puerto
 EXPOSE ${PORT}
 # corremos el comando para nuestra app
-CMD [ "node", "index.js" ]
+CMD [ "npm", "start" ]
